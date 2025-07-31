@@ -1,0 +1,43 @@
+{
+  "name": "beta-doc-backend",
+  "type": "module",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:watch": "echo \"Error: no test specified\" && exit 1",
+    "lint": "echo \"Error: no linter specified\" && exit 1",
+    "lint:fix": "echo \"Error: no linter specified\" && exit 1"
+  },
+  "keywords": [
+    "healthcare",
+    "api",
+    "express",
+    "supabase",
+    "jwt",
+    "authentication",
+    "patients",
+    "doctors",
+    "consultations"
+  ],
+  "author": "Betadoc Team",
+  "license": "ISC",
+  "description": "A comprehensive healthcare platform API for managing patients, doctors, and consultations",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.52.1",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}
