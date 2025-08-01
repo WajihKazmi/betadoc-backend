@@ -39,6 +39,108 @@ export const userModel = {
     return data;
   },
 
+  // Find patient by email
+  findPatientByEmail: async (email) => {
+    const { data, error } = await supabase
+      .from('patients')
+      .select('*')
+      .eq('email', email)
+      .single();
+    
+    if (error && error.code !== 'PGRST116') {
+      throw error;
+    }
+    
+    return data;
+  },
+
+  // Find doctor by email
+  findDoctorByEmail: async (email) => {
+    const { data, error } = await supabase
+      .from('doctors')
+      .select('*')
+      .eq('email', email)
+      .single();
+    
+    if (error && error.code !== 'PGRST116') {
+      throw error;
+    }
+    
+    return data;
+  },
+
+  // Find patient by username (if username field exists)
+  findPatientByUsername: async (username) => {
+    const { data, error } = await supabase
+      .from('patients')
+      .select('*')
+      .eq('username', username)
+      .single();
+    
+    if (error && error.code !== 'PGRST116') {
+      throw error;
+    }
+    
+    return data;
+  },
+
+  // Find doctor by username (if username field exists)
+  findDoctorByUsername: async (username) => {
+    const { data, error } = await supabase
+      .from('doctors')
+      .select('*')
+      .eq('username', username)
+      .single();
+    
+    if (error && error.code !== 'PGRST116') {
+      throw error;
+    }
+    
+    return data;
+  },
+
+  // Check if patient exists by phone or email
+  checkPatientExists: async (phone_number, email) => {
+    let query = supabase.from('patients').select('id, phone_number, email');
+    
+    if (phone_number && email) {
+      query = query.or(`phone_number.eq.${phone_number},email.eq.${email}`);
+    } else if (phone_number) {
+      query = query.eq('phone_number', phone_number);
+    } else if (email) {
+      query = query.eq('email', email);
+    }
+    
+    const { data, error } = await query;
+    
+    if (error) {
+      throw error;
+    }
+    
+    return data && data.length > 0 ? data[0] : null;
+  },
+
+  // Check if doctor exists by phone or email
+  checkDoctorExists: async (phone_number, email) => {
+    let query = supabase.from('doctors').select('id, phone_number, email');
+    
+    if (phone_number && email) {
+      query = query.or(`phone_number.eq.${phone_number},email.eq.${email}`);
+    } else if (phone_number) {
+      query = query.eq('phone_number', phone_number);
+    } else if (email) {
+      query = query.eq('email', email);
+    }
+    
+    const { data, error } = await query;
+    
+    if (error) {
+      throw error;
+    }
+    
+    return data && data.length > 0 ? data[0] : null;
+  },
+
   // Create new patient
   createPatient: async (patientData) => {
     const { data, error } = await supabase

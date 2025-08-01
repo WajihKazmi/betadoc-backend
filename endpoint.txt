@@ -1,0 +1,110 @@
+### Authentication Endpoints
+
+#### Patient Registration
+```http
+POST https://betadoc-backend.vercel.app/api/auth/patient/register
+Content-Type: application/json
+
+{
+  "phone_number": "+2348012345678",W
+  "language": "English",
+  "referral_source": "Social Media",
+  "whatsapp_opt_in": true
+}
+```
+
+#### Doctor Registration
+```http
+POST https://betadoc-backend.vercel.app/api/auth/doctor/register
+Content-Type: application/json
+
+{
+  "full_name": "Dr. Jane Doe",
+  "phone_number": "+2348012345678",
+  "location": "Lagos, Nigeria",
+  "specialty": "General Medicine",
+  "experience_years": 5,
+  "languages_spoken": ["English", "Yoruba"],
+  "availability": {
+    "monday": ["9:00-12:00", "14:00-17:00"],
+    "tuesday": ["10:00-13:00"]
+  },
+  "bio": "Experienced doctor with a passion for preventive care.",
+  "focus": "chest pain, blood pressure, diabetes, lifestyle coaching",
+  "email": "jane@example.com",
+  "gender": "Female",
+  "mdcn_license_number": "A123456",
+  "mdcn_certificate_url": "https://example.com/certificates/jane.pdf",
+  "consultation_mode": "Both"
+}
+```
+
+#### Patient Login
+```http
+POST https://betadoc-backend.vercel.app/api/auth/patient/login
+Content-Type: application/json
+
+{
+  "phone_number": "+2348012345678"
+}
+```
+
+#### Doctor Login
+```http
+POST https://betadoc-backend.vercel.app/api/auth/doctor/login
+Content-Type: application/json
+
+{
+  "phone_number": "+2348012345678"
+}
+```
+
+#### Get Current User Profile
+```http
+GET https://betadoc-backend.vercel.app/api/auth/me
+Authorization: Bearer <access_token>
+```
+
+#### Update Patient Profile
+```http
+PUT https://betadoc-backend.vercel.app/api/auth/patient/profile
+Authorization: Bearer <access_token>
+Content-Type: application/json
+
+{
+  "language": "Yoruba",
+  "referral_source": "Friend",
+  "whatsapp_opt_in": false
+}
+```
+
+#### Update Doctor Profile
+```http
+PUT https://betadoc-backend.vercel.app/api/auth/doctor/profile
+Authorization: Bearer <access_token>
+Content-Type: application/json
+
+{
+  "full_name": "Dr. Jane Smith",
+  "location": "Abuja, Nigeria",
+  "specialty": "Pediatrics",
+  "experience_years": 6,
+  "bio": "Updated bio information"
+}
+```
+
+#### Refresh Token
+```http
+POST https://betadoc-backend.vercel.app/api/auth/refresh
+Content-Type: application/json
+
+{
+  "refresh_token": "your_refresh_token"
+}
+```
+
+#### Logout
+```http
+POST https://betadoc-backend.vercel.app/api/auth/logout
+Authorization: Bearer <access_token>
+```

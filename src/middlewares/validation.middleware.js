@@ -1,20 +1,34 @@
 // Validation middleware for request validation
 export const validatePatientRegistration = (req, res, next) => {
-  const { phone_number } = req.body;
+  const { phone_number, password } = req.body;
 
-  if (!phone_number) {
+  const errors = [];
+
+  if (!phone_number) errors.push('Phone number is required');
+  if (!password) errors.push('Password is required');
+
+  if (errors.length > 0) {
     return res.status(400).json({
       success: false,
-      message: 'Phone number is required'
+      message: 'Validation failed',
+      errors
     });
   }
 
-  // Basic phone number validation (you can enhance this)
+  // Basic phone number validation
   const phoneRegex = /^\+?[1-9]\d{1,14}$/;
   if (!phoneRegex.test(phone_number)) {
     return res.status(400).json({
       success: false,
       message: 'Invalid phone number format'
+    });
+  }
+
+  // Password validation
+  if (password.length < 6) {
+    return res.status(400).json({
+      success: false,
+      message: 'Password must be at least 6 characters long'
     });
   }
 
@@ -26,7 +40,8 @@ export const validateDoctorRegistration = (req, res, next) => {
     full_name,
     phone_number,
     location,
-    specialty
+    specialty,
+    password
   } = req.body;
 
   const errors = [];
@@ -35,6 +50,7 @@ export const validateDoctorRegistration = (req, res, next) => {
   if (!phone_number) errors.push('Phone number is required');
   if (!location) errors.push('Location is required');
   if (!specialty) errors.push('Specialty is required');
+  if (!password) errors.push('Password is required');
 
   if (errors.length > 0) {
     return res.status(400).json({
@@ -53,6 +69,14 @@ export const validateDoctorRegistration = (req, res, next) => {
     });
   }
 
+  // Password validation
+  if (password.length < 6) {
+    return res.status(400).json({
+      success: false,
+      message: 'Password must be at least 6 characters long'
+    });
+  }
+
   // Email validation if provided
   if (req.body.email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -68,22 +92,47 @@ export const validateDoctorRegistration = (req, res, next) => {
 };
 
 export const validateLogin = (req, res, next) => {
-  const { phone_number } = req.body;
+  const { phone_number, email, username, password } = req.body;
 
-  if (!phone_number) {
+  const errors = [];
+
+  // At least one identifier is required
+  if (!phone_number && !email && !username) {
+    errors.push('Phone number, email, or username is required');
+  }
+
+  if (!password) {
+    errors.push('Password is required');
+  }
+
+  if (errors.length > 0) {
     return res.status(400).json({
       success: false,
-      message: 'Phone number is required'
+      message: 'Validation failed',
+      errors
     });
   }
 
-  // Basic phone number validation
-  const phoneRegex = /^\+?[1-9]\d{1,14}$/;
-  if (!phoneRegex.test(phone_number)) {
-    return res.status(400).json({
-      success: false,
-      message: 'Invalid phone number format'
-    });
+  // Validate phone number format if provided
+  if (phone_number) {
+    const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+    if (!phoneRegex.test(phone_number)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid phone number format'
+      });
+    }
+  }
+
+  // Validate email format if provided
+  if (email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid email format'
+      });
+    }
   }
 
   next();

@@ -21,31 +21,34 @@ export const registerPatient = async (req, res) => {
   try {
     const {
       phone_number,
+      password,
+      email,
+      username,
       language = 'English',
       referral_source,
       whatsapp_opt_in = true
     } = req.body;
 
-    // Validate required fields
-    if (!phone_number) {
-      return res.status(400).json({
+    // Check if patient already exists by phone or email
+    const existingPatient = await userModel.checkPatientExists(phone_number, email);
+    if (existingPatient) {
+      const conflictField = existingPatient.phone_number === phone_number ? 'phone number' : 'email';
+      return res.status(409).json({
         success: false,
-        message: 'Phone number is required'
+        message: `Patient with this ${conflictField} already exists`
       });
     }
 
-    // Check if patient already exists
-    const existingPatient = await userModel.findByPhone(phone_number);
-    if (existingPatient) {
-      return res.status(409).json({
-        success: false,
-        message: 'Patient with this phone number already exists'
-      });
-    }
+    // Hash password
+    const saltRounds = 12;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Create new patient
     const patientData = {
       phone_number,
+      password: hashedPassword,
+      email,
+      username,
       language,
       referral_source,
       whatsapp_opt_in,
@@ -53,6 +56,9 @@ export const registerPatient = async (req, res) => {
     };
 
     const newPatient = await userModel.createPatient(patientData);
+
+    // Remove password from response
+    delete newPatient.password;
 
     // Generate token
     const token = generateToken({
@@ -92,6 +98,7 @@ export const registerDoctor = async (req, res) => {
     const {
       full_name,
       phone_number,
+      password,
       location,
       specialty,
       experience_years,
@@ -100,33 +107,32 @@ export const registerDoctor = async (req, res) => {
       bio,
       focus,
       email,
+      username,
       gender,
       mdcn_license_number,
       mdcn_certificate_url,
       consultation_mode = 'Both'
     } = req.body;
 
-    // Validate required fields
-    if (!full_name || !phone_number || !location || !specialty) {
-      return res.status(400).json({
+    // Check if doctor already exists by phone or email
+    const existingDoctor = await userModel.checkDoctorExists(phone_number, email);
+    if (existingDoctor) {
+      const conflictField = existingDoctor.phone_number === phone_number ? 'phone number' : 'email';
+      return res.status(409).json({
         success: false,
-        message: 'Full name, phone number, location, and specialty are required'
+        message: `Doctor with this ${conflictField} already exists`
       });
     }
 
-    // Check if doctor already exists
-    const existingDoctor = await userModel.findDoctorByPhone(phone_number);
-    if (existingDoctor) {
-      return res.status(409).json({
-        success: false,
-        message: 'Doctor with this phone number already exists'
-      });
-    }
+    // Hash password
+    const saltRounds = 12;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Create new doctor
     const doctorData = {
       full_name,
       phone_number,
+      password: hashedPassword,
       location,
       specialty,
       experience_years,
@@ -135,6 +141,7 @@ export const registerDoctor = async (req, res) => {
       bio,
       focus,
       email,
+      username,
       gender,
       mdcn_license_number,
       mdcn_certificate_url,
@@ -144,6 +151,9 @@ export const registerDoctor = async (req, res) => {
     };
 
     const newDoctor = await userModel.createDoctor(doctorData);
+
+    // Remove password from response
+    delete newDoctor.password;
 
     // Generate token
     const token = generateToken({
@@ -180,21 +190,32 @@ export const registerDoctor = async (req, res) => {
 // Patient Login
 export const loginPatient = async (req, res) => {
   try {
-    const { phone_number } = req.body;
+    const { phone_number, email, username, password } = req.body;
 
-    if (!phone_number) {
-      return res.status(400).json({
-        success: false,
-        message: 'Phone number is required'
-      });
+    let patient = null;
+
+    // Find patient by phone, email, or username
+    if (phone_number) {
+      patient = await userModel.findByPhone(phone_number);
+    } else if (email) {
+      patient = await userModel.findPatientByEmail(email);
+    } else if (username) {
+      patient = await userModel.findPatientByUsername(username);
     }
 
-    // Find patient
-    const patient = await userModel.findByPhone(phone_number);
     if (!patient) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid phone number'
+        message: 'Invalid credentials'
+      });
+    }
+
+    // Verify password
+    const isPasswordValid = await bcrypt.compare(password, patient.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid credentials'
       });
     }
 
@@ -202,6 +223,9 @@ export const loginPatient = async (req, res) => {
     await userModel.updatePatient(patient.id, {
       last_seen: new Date().toISOString()
     });
+
+    // Remove password from response
+    delete patient.password;
 
     // Generate token
     const token = generateToken({
@@ -238,21 +262,32 @@ export const loginPatient = async (req, res) => {
 // Doctor Login
 export const loginDoctor = async (req, res) => {
   try {
-    const { phone_number } = req.body;
+    const { phone_number, email, username, password } = req.body;
 
-    if (!phone_number) {
-      return res.status(400).json({
-        success: false,
-        message: 'Phone number is required'
-      });
+    let doctor = null;
+
+    // Find doctor by phone, email, or username
+    if (phone_number) {
+      doctor = await userModel.findDoctorByPhone(phone_number);
+    } else if (email) {
+      doctor = await userModel.findDoctorByEmail(email);
+    } else if (username) {
+      doctor = await userModel.findDoctorByUsername(username);
     }
 
-    // Find doctor
-    const doctor = await userModel.findDoctorByPhone(phone_number);
     if (!doctor) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid phone number'
+        message: 'Invalid credentials'
+      });
+    }
+
+    // Verify password
+    const isPasswordValid = await bcrypt.compare(password, doctor.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid credentials'
       });
     }
 
@@ -263,6 +298,9 @@ export const loginDoctor = async (req, res) => {
         message: 'Account is deactivated'
       });
     }
+
+    // Remove password from response
+    delete doctor.password;
 
     // Generate token
     const token = generateToken({
