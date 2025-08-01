@@ -2,7 +2,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import authRoutes from './routes/auth.routes.js';
+import routes from './routes/index.js';
 
 dotenv.config();
 
@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use('/api/auth', authRoutes);
+app.use('/api', routes);
 
 // Health check endpoint
 app.get("/", (req, res) => {
