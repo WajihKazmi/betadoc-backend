@@ -1,4 +1,3 @@
-// Simple test script to verify authentication endpoints
 import fetch from 'node-fetch';
 
 const BASE_URL = 'http://localhost:5000/api/auth';
@@ -10,7 +9,8 @@ const testPatient = {
   email: 'test.patient@example.com',
   language: 'English',
   referral_source: 'Online',
-  whatsapp_opt_in: true
+  whatsapp_opt_in: true,
+  name: 'Test Patient',
 };
 
 const testDoctor = {
@@ -22,7 +22,7 @@ const testDoctor = {
   specialty: 'General Medicine',
   experience_years: 5,
   languages_spoken: ['English'],
-  consultation_mode: 'Both'
+  consultation_mode: 'both'
 };
 
 async function testEndpoint(endpoint, method, data) {
@@ -115,3 +115,8 @@ async function runTests() {
 
 // Run tests
 runTests().catch(console.error);
+
+
+
+
+

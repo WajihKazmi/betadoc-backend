@@ -70,11 +70,11 @@ export const userModel = {
   },
 
   // Find patient by username (if username field exists)
-  findPatientByUsername: async (username) => {
+  findPatientByUsername: async (name) => {
     const { data, error } = await supabase
       .from('patients')
       .select('*')
-      .eq('username', username)
+      .eq('name', name)
       .single();
     
     if (error && error.code !== 'PGRST116') {
