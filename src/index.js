@@ -2,7 +2,18 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './config/swagger.js';
 import routes from './routes/index.js';
+
+// Import Swagger documentation
+import './docs/index.js';
+
+// ES module fix for __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
@@ -16,6 +27,9 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static files from the public directory
+app.use(express.static('public'));
+
 // Request logging middleware
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
@@ -25,14 +39,33 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api', routes);
 
+// Swagger UI setup
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  explorer: true,
+  customCssUrl: 'https://cdn.jsdelivr.net/npm/swagger-ui-themes@3.0.1/themes/3.x/theme-material.css'
+}));
+
+// Swagger JSON endpoint
+app.get('/api-docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+
 // Health check endpoint
 app.get("/", (req, res) => {
-  res.json({
-    success: true,
-    message: "Betadoc API is running",
-    timestamp: new Date().toISOString(),
-    version: "1.0.0"
-  });
+  // For API clients, return JSON
+  if (req.headers.accept && req.headers.accept.includes('application/json')) {
+    return res.json({
+      success: true,
+      message: "Betadoc API is running",
+      timestamp: new Date().toISOString(),
+      version: "1.0.0",
+      docs: `${req.protocol}://${req.get('host')}/api-docs`
+    });
+  }
+  
+  // For browser clients, serve the HTML page
+  res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 // 404 handler

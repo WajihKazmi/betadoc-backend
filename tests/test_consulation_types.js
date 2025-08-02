@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 
 const BASE_URL = 'http://localhost:5000/api/';  // Your API base URL
-
+//const BASE_URL = 'https://betadoc-backend-wajih-kazmis-projects.vercel.app/api/';
 // Test data
 const testPatient = {
   phone_number: '+1234567890',

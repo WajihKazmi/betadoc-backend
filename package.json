@@ -6,10 +6,16 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "test:watch": "echo \"Error: no test specified\" && exit 1",
-    "lint": "echo \"Error: no linter specified\" && exit 1",
-    "lint:fix": "echo \"Error: no linter specified\" && exit 1"
+    "swagger": "node src/index.js --swagger",
+    "test:auth": "node tests/test_auth.js",
+    "test:consultation-types": "node tests/add_consultation_types.js",
+    "test:flow": "node tests/test_consultation_flow.js",
+    "test:users": "node tests/test_users.js",
+    "test:update-availability": "node tests/update_doctor_availability.js",
+    "test:slot-booking": "node tests/test_consultation_slot_booking.js",
+    "test:listings": "node tests/test_consultation_listings.js",
+    "update:schema": "node tests/update_schema.js",
+    "update:consultation-fields": "node -e \"console.log('Running consultation fields schema update...'); require('fs').readFileSync('consultation_fields_update.sql', 'utf8').split(';').forEach(query => query.trim() && console.log(query));\""
   },
   "keywords": [
     "healthcare",
@@ -32,7 +38,9 @@
     "dotenv": "^17.2.1",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.0"

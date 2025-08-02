@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BetaDoc API</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            background-color: #f7f7f7;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        h2 {
+            color: #3498db;
+            margin-top: 20px;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 20px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .info {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        code {
+            background-color: #f1f1f1;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .redirect-message {
+            font-style: italic;
+            margin-top: 30px;
+            color: #7f8c8d;
+            text-align: center;
+        }
+    </style>
+    <script>
+        // Automatically redirect to API docs after a short delay
+        window.onload = function() {
+            setTimeout(function() {
+                window.location.href = '/api-docs';
+            }, 3000); // Redirect after 3 seconds
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to BetaDoc API</h1>
+        <div class="info">
+            <p>This is the backend API for the BetaDoc healthcare platform. The API provides endpoints for patient and doctor management, consultation bookings, and more.</p>
+        </div>
+        
+        <h2>API Documentation</h2>
+        <p>Complete API documentation is available in our Swagger UI:</p>
+        <a href="/api-docs" class="btn">View API Documentation</a>
+        
+        <h2>API Endpoints</h2>
+        <p>The API provides the following main endpoints:</p>
+        <ul>
+            <li><code>/api/auth</code> - Authentication endpoints for patients and doctors</li>
+            <li><code>/api/users</code> - User management endpoints</li>
+            <li><code>/api/consultations</code> - Consultation booking and management</li>
+        </ul>
+        
+        <h2>API Status</h2>
+        <p>You can check the API status at: <code>/</code> (root endpoint)</p>
+        
+        <p class="redirect-message">You will be automatically redirected to the API documentation in 3 seconds...</p>
+    </div>
+</body>
+</html>

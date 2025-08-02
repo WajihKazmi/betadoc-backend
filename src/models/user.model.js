@@ -213,5 +213,75 @@ export const userModel = {
     
     if (error) throw error;
     return data;
+  },
+  
+  // Get all doctors with optional filters
+  getAllDoctors: async (filters = {}) => {
+    try {
+      let query = supabase
+        .from('doctors')
+        .select('*');
+      
+      // Apply filters if provided
+      if (filters.specialty) {
+        query = query.eq('specialty', filters.specialty);
+      }
+      
+      if (filters.is_active !== undefined) {
+        query = query.eq('is_active', filters.is_active);
+      }
+      
+      if (filters.location) {
+        query = query.ilike('location', `%${filters.location}%`);
+      }
+      
+      if (filters.consultation_mode) {
+        query = query.eq('consultation_mode', filters.consultation_mode);
+      }
+      
+      if (filters.gender) {
+        query = query.eq('gender', filters.gender);
+      }
+      
+      // Order by name
+      query = query.order('full_name', { ascending: true });
+      
+      const { data, error } = await query;
+      
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error in getAllDoctors:', error);
+      throw error;
+    }
+  },
+  
+  // Get all patients with optional filters
+  getAllPatients: async (filters = {}) => {
+    try {
+      let query = supabase
+        .from('patients')
+        .select('*');
+      
+      // Apply filters if provided
+      if (filters.language) {
+        query = query.eq('language', filters.language);
+      }
+      
+      if (filters.referral_source) {
+        query = query.eq('referral_source', filters.referral_source);
+      }
+      
+      // Order by name
+      query = query.order('name', { ascending: true });
+      
+      const { data, error } = await query;
+      
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error in getAllPatients:', error);
+      throw error;
+    }
   }
 };
