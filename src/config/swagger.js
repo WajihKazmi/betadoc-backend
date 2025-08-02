@@ -16,13 +16,11 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: 'http://localhost:5000',
-      description: 'Development server',
-    },
-    {
-      url: 'https://beta-doc-backend.vercel.app',
-      description: 'Production server',
-    },
+      url: process.env.NODE_ENV === 'production' 
+        ? 'https://beta-doc-backend.vercel.app'
+        : 'http://localhost:5000',
+      description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server',
+    }
   ],
   components: {
     securitySchemes: {

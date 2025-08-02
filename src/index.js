@@ -3,10 +3,11 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, dirname } from 'url';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger.js';
 import routes from './routes/index.js';
+import swaggerUiDist from 'swagger-ui-dist';
 
 // Import Swagger documentation
 import './docs/index.js';
@@ -30,6 +31,10 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static files from the public directory
 app.use(express.static('public'));
 
+// Serve Swagger UI static files from node_modules
+const swaggerDistDir = path.dirname(swaggerUiDist.getAbsoluteFSPath());
+app.use('/swagger-ui-dist', express.static(swaggerDistDir));
+
 // Request logging middleware
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
@@ -42,7 +47,10 @@ app.use('/api', routes);
 // Swagger UI setup
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   explorer: true,
-  customCssUrl: 'https://cdn.jsdelivr.net/npm/swagger-ui-themes@3.0.1/themes/3.x/theme-material.css'
+  customCssUrl: 'https://cdn.jsdelivr.net/npm/swagger-ui-themes@3.0.1/themes/3.x/theme-material.css',
+  swaggerOptions: {
+    url: '/api-docs.json'
+  }
 }));
 
 // Swagger JSON endpoint
@@ -58,14 +66,18 @@ app.get("/", (req, res) => {
     return res.json({
       success: true,
       message: "Betadoc API is running",
-      timestamp: new Date().toISOString(),
       version: "1.0.0",
-      docs: `${req.protocol}://${req.get('host')}/api-docs`
+      documentation: "/api-docs"
     });
   }
   
-  // For browser clients, serve the HTML page
+  // For browser clients, serve the HTML landing page
   res.sendFile(path.join(__dirname, '../public/index.html'));
+});
+
+// Fallback for Swagger UI
+app.get("/api-docs-fallback", (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/api-docs.html'));
 });
 
 // 404 handler

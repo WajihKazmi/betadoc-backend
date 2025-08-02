@@ -12,6 +12,14 @@
   ],
   "routes": [
     {
+      "src": "/api-docs-fallback",
+      "dest": "public/api-docs.html"
+    },
+    {
+      "src": "/api-docs.json",
+      "dest": "src/index.js"
+    },
+    {
       "src": "/api-docs/(.*)",
       "dest": "src/index.js"
     },
