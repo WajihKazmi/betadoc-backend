@@ -20,22 +20,11 @@
       ]
     }
   ],
-  "routes": [
-    {
-      "src": "/api-docs.json",
-      "dest": "src/index.js"
-    },
-    {
-      "src": "/api-docs/(.*)",
-      "dest": "src/index.js"
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "src/index.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "src/index.js"
-    }
+  "rewrites": [
+    { "source": "/api-docs.json", "destination": "src/index.js" },
+    { "source": "/api-docs/(.*)", "destination": "src/index.js" },
+    { "source": "/api/(.*)", "destination": "src/index.js" },
+    { "source": "/api-docs-fallback", "destination": "/public/api-docs.html" },
+    { "source": "/(.*)", "destination": "src/index.js" }
   ]
 }
