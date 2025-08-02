@@ -39,10 +39,18 @@ app.use(express.static('public'));
 const swaggerDistDir = path.dirname(swaggerUiDist.getAbsoluteFSPath());
 app.use('/swagger-ui-dist', express.static(swaggerDistDir));
 
+// Make Swagger UI assets available at multiple paths for flexibility
+app.use('/api-docs/swagger-ui-dist', express.static(swaggerDistDir));
+
 // Request logging middleware
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
+});
+
+// Handle OPTIONS preflight requests
+app.options('*', (req, res) => {
+  res.status(200).end();
 });
 
 // Routes
@@ -53,12 +61,15 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   explorer: true,
   customCssUrl: 'https://cdn.jsdelivr.net/npm/swagger-ui-themes@3.0.1/themes/3.x/theme-material.css',
   swaggerOptions: {
+    url: '/api-docs.json',
     docExpansion: 'list',
     filter: true,
     showExtensions: true,
     tagsSorter: 'alpha',
     operationsSorter: 'alpha',
-    persistAuthorization: true
+    persistAuthorization: true,
+    displayRequestDuration: true,
+    defaultModelsExpandDepth: 2
   }
 }));
 
@@ -81,13 +92,17 @@ app.get("/", (req, res) => {
     });
   }
   
-  // For browser clients, serve the HTML landing page
+  // For browser clients, either redirect to API docs or serve the HTML landing page
+  if (req.query.docs === 'true') {
+    return res.redirect('/api-docs');
+  }
+  
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-// Fallback for Swagger UI
+// Direct to the main Swagger UI for any alternate paths
 app.get("/api-docs-fallback", (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/api-docs.html'));
+  res.redirect('/api-docs');
 });
 
 // 404 handler
