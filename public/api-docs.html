@@ -23,6 +23,51 @@
       margin: 0;
       background: #fafafa;
     }
+
+    .swagger-ui .topbar {
+      background-color: #2c3e50;
+    }
+
+    .swagger-ui .info .title {
+      color: #2c3e50;
+    }
+
+    /* Fix for placeholder links */
+    .swagger-ui a[href="#"] {
+      display: none;
+    }
+
+    /* Authorization button */
+    .swagger-ui .auth-wrapper .authorize {
+      margin-right: 10px;
+      background-color: #2c3e50;
+      border-color: #2c3e50;
+    }
+
+    /* Fix for tables */
+    .swagger-ui table tbody tr td {
+      padding: 10px !important;
+    }
+
+    .swagger-ui .opblock {
+      margin-bottom: 15px;
+      border-radius: 4px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+
+    .auth-helper {
+      padding: 20px;
+      margin: 20px 0;
+      background-color: #f0f0f0;
+      border-radius: 4px;
+      border-left: 4px solid #2c3e50;
+    }
+
+    .auth-helper code {
+      background-color: #e0e0e0;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
   </style>
 </head>
 <body>
@@ -47,8 +92,32 @@
         plugins: [
           SwaggerUIBundle.plugins.DownloadUrl
         ],
-        layout: "StandaloneLayout"
+        layout: "StandaloneLayout",
+        docExpansion: "list",
+        filter: true,
+        persistAuthorization: true,
+        tagsSorter: "alpha",
+        operationsSorter: "alpha"
       });
+      
+      // Add authorization helper after UI is loaded
+      setTimeout(function() {
+        const authHelper = document.createElement('div');
+        authHelper.className = 'auth-helper';
+        authHelper.innerHTML = `
+          <h3>How to Authorize</h3>
+          <p>1. Click the "Authorize" button at the top right</p>
+          <p>2. In the "Value" field, enter: <code>Bearer YOUR_TOKEN</code></p>
+          <p>3. Click "Authorize" and then "Close"</p>
+          <p>To get a token, use the <code>/api/auth/patient/login</code> or <code>/api/auth/doctor/login</code> endpoints</p>
+        `;
+        
+        const swaggerUI = document.getElementById('swagger-ui');
+        const infoContainer = document.querySelector('.swagger-ui .info');
+        if (infoContainer) {
+          infoContainer.appendChild(authHelper);
+        }
+      }, 1000);
       
       window.ui = ui;
     };
