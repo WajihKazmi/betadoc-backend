@@ -114,6 +114,7 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log("=== Betadoc API Server ===");
   console.log(`Server is running on port ${PORT}`);
+  console.log(`Api-Docx on http://localhost:${PORT}/`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`Supabase URL: ${process.env.SUPABASE_URL ? 'Configured' : 'Not configured'}`);
   console.log(`JWT Secret: ${process.env.JWT_SECRET ? 'Configured' : 'Not configured'}`);
