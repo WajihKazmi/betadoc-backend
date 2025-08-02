@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
-import { fileURLToPath, dirname } from 'url';
+import { fileURLToPath } from 'url';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger.js';
 import routes from './routes/index.js';
@@ -67,7 +67,8 @@ app.get("/", (req, res) => {
       success: true,
       message: "Betadoc API is running",
       version: "1.0.0",
-      documentation: "/api-docs"
+      documentation: "/api-docs",
+      nodeVersion: process.version
     });
   }
   
